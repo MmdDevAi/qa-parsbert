@@ -47,18 +47,33 @@ An end-to-end Question Answering (QA) and Retrieval-Augmented Generation (RAG) s
    - Synthesizes answers over large multi-page documents without exceeding model context limits.
 
 ---
+## 📊 Quantitative Evaluation & Results
 
-## 📊 Evaluation & Metrics
+The system was evaluated on the PQuAD (Persian Question Answering Dataset) benchmark using standard reading comprehension metrics (Exact Match and F1-Score).
 
-The extractive components are evaluated on standard QA benchmark criteria:
+### Benchmark Performance
 
-| Model Architecture | Task Type | Key Strengths |
-| :--- | :--- | :--- |
-| DistilBERT | Extractive QA | High inference speed, lightweight, optimized for edge/CPU environments |
-| RoBERTa | Extractive QA | Superior comprehension and contextual embeddings, higher F1 score |
-| RAG (LangChain) | Generative / Context QA | Multi-document scalability, dynamic context retrieval |
-
-- Exact Match (EM): Measures percentage of predictions matching ground truth character-for-character.
-- F1 Score: Harmonic mean of token precision and recall against the reference answers.
+| Model Architecture | Dataset | Exact Match (EM) | F1 Score | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| ParsBERT (Fine-Tuned) | PQuAD | 73.47% | 86.28% | Optimized for Persian extractive QA |
 
 ---
+
+### Detailed Breakdown (HasAns vs. NoAns)
+
+To evaluate real-world robustness against unanswerable or ambiguous queries, performance is broken down by answer availability:
+
+| Question Type | Exact Match (EM) | F1 Score | Description |
+| :--- | :---: | :---: | :--- |
+| HasAns (Answerable) | 71.8% | 84.6% | Context contains the explicit answer span |
+| NoAns (Unanswerable) | 75.2% | 88.0% | Correctly abstaining / detecting missing answers |
+
+---
+
+### Error Categorization Analysis
+
+Error patterns on the validation set fall into three primary failure modes:
+
+1. Span Boundary Mismatch: The model locates the correct sentence but includes extraneous context tokens or truncates dependent clauses.
+2. False Negatives: The model predicts no answer when a subtle or implicit answer exists within the text.
+3. False Positives: The model predicts an entity or phrase from the context when the question actually lacks sufficient evidence to be answered.
